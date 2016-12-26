@@ -1,15 +1,15 @@
 {
-  "name": "elm-webpack-starter",
-  "description": "Webpack setup for writing Elm apps",
-  "version": "0.7.1",
+  "name": "bask-app",
+  "description": "Sunlight estimator",
+  "version": "0.0.1",
   "license": "MIT",
-  "author": "Peter Morawiec",
+  "author": "Nathan Kane",
   "repository": {
     "type": "git",
-    "url": "https://github.com/moarwick/elm-webpack-starter"
+    "url": "https://github.com/kanenathan213/bask-app"
   },
   "scripts": {
-    "start": "webpack-dev-server --hot --inline --content-base src/",
+    "start": "webpack-dev-server --open --hot --inline --content-base src/",
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch"
   },
