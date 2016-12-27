@@ -78,7 +78,7 @@ view model =
 
 radio : String -> msg -> Html msg
 radio value msg =
-  div [ class "radio" ] [
+  div [ class "radio-inline" ] [
     label [ style [("padding", "20px")]] [
       input [ type_ "radio", name "font-size", onClick msg ] [],
       span [] [
