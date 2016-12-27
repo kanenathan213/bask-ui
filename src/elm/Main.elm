@@ -1,7 +1,6 @@
-import Html exposing (Html, Attribute, div, fieldset, input, label, text)
-import Html.Attributes exposing (name, style, type_)
+import Html exposing (Html, Attribute, div, span, fieldset, input, label, text)
+import Html.Attributes exposing (name, style, type_, class)
 import Html.Events exposing (onClick)
-import Debug exposing (log)
 
 -- APP
 main : Program Never Model Msg
@@ -29,12 +28,13 @@ type SkinType
   | Mediterranean
   | MiddleEastern
   | Black
+  | Nothing
 
 emptyModel : Model
 emptyModel =
     {
     -- ,  todaysDate = Date.now
-       skinType = PaleCaucasian
+       skinType = Nothing
     -- ,  currentTime = Time.now
     ,  sunIndex = 0.1
     ,  userInputLocation = "\\"
@@ -51,33 +51,41 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     SwitchTo newSkinType ->
-      log "hi"
       { model | skinType = newSkinType }
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ fieldset []
-        [ radio "PaleCaucasian" (SwitchTo PaleCaucasian)
-        , radio "BlondCaucasian" (SwitchTo BlondCaucasian)
-        , radio "DarkerCaucasian" (SwitchTo DarkerCaucasian)
-        , radio "Mediterranean" (SwitchTo Mediterranean)
-        , radio "MiddleEastern" (SwitchTo MiddleEastern)
-        , radio "Black" (SwitchTo Black)
+  div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][
+    div [ class "row" ][
+      -- div [ class "col-xs-12" ] [ text <| "Today's date is " ++ dateString model ],
+      div [ class "col-xs-12" ] [
+        div []
+        [ fieldset []
+          [ radio "Pale white" (SwitchTo PaleCaucasian)
+          , radio "Light white" (SwitchTo BlondCaucasian)
+          , radio "Tan white" (SwitchTo DarkerCaucasian)
+          , radio "Brown" (SwitchTo Mediterranean)
+          , radio "Dark Brown" (SwitchTo MiddleEastern)
+          , radio "Black" (SwitchTo Black)
         ]
-    -- , [ text toString model.skinType ]
+          , text (toString model.skinType)
+        ]
+      ]
     ]
+  ]
 
 radio : String -> msg -> Html msg
 radio value msg =
-  label
-    [ style [("padding", "20px")]
+  div [ class "radio" ] [
+    label [ style [("padding", "20px")]] [
+      input [ type_ "radio", name "font-size", onClick msg ] [],
+      span [] [
+        text value
+      ]
     ]
-    [ input [ type_ "radio", name "font-size", onClick msg ] []
-    , text value
-    ]
+  ]
 
 -- CSS STYLES
 styles : { img : List ( String, String ) }
