@@ -1,95 +1,83 @@
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.App as Html
-import Date exposing ( Date )
-import Time exposing ( Time )
-import Task
+import Html exposing (Html, Attribute, div, fieldset, input, label, text)
+import Html.Attributes exposing (name, style, type_)
+import Html.Events exposing (onClick)
+import Debug exposing (log)
 
 -- APP
-main : Program (Maybe Model)
+main : Program Never Model Msg
 main =
-  Html.programWithFlags {
-    init = init,
+  Html.beginnerProgram {
+    model = emptyModel,
     view = view,
-    update = update,
-    subscriptions = \_ -> Sub.none
+    update = update
   }
 
 -- MODEL
-
 type alias Model =
   {
-  -- , todaysDate : Date
-    skinType : Int
-  -- , currentTime : Platform.Task a Time
-  , sunIndex : Int
+    skinType : SkinType
+  , sunIndex : Float
   , userInputLocation : String
-  , lat : Int
-  , long : Int
+  , lat : Float
+  , long : Float
   }
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-  case msg of
-    SetSkinType newSkinType ->
-      { model | skinType = newSkinType }
-        ! []
-
--- dateString : Model -> String
--- dateString newModel =
---   case newModel.date of
---     Nothing -> "No date here"
---     Just date ->
---       " "
---       ++ (toString <| Date.dayOfWeek date)
---       ++ " "
---       ++ (toString <| Date.day date)
---       ++ " "
---       ++ (toString <| Date.month date)
---       ++ " "
---       ++ (toString <| Date.year date)
-
--- now : Cmd Msg
--- now =
---   Task.perform (always (SetDate Maybe Date)) (Just >> SetDate) Date.now
+type SkinType
+  = PaleCaucasian
+  | BlondCaucasian
+  | DarkerCaucasian
+  | Mediterranean
+  | MiddleEastern
+  | Black
 
 emptyModel : Model
 emptyModel =
     {
     -- ,  todaysDate = Date.now
-       skinType = 0
+       skinType = PaleCaucasian
     -- ,  currentTime = Time.now
-    ,  sunIndex = 0
+    ,  sunIndex = 0.1
     ,  userInputLocation = "\\"
-    ,  lat = 0
-    ,  long = 0
+    ,  lat = 0.1
+    ,  long = 0.1
     }
-
-init : Maybe Model -> ( Model, Cmd Msg )
-init savedModel =
-    Maybe.withDefault emptyModel savedModel ! []
 
 -- UPDATE
 type Msg
   =
-    -- SetDate Date
-  SetSkinType Int
-  -- | SetCurrentTime (Maybe Time)
-  -- | SetSunIndex Int
-  -- | SetLat Int
-  -- | SetLong Int
-  -- | SetLocation String
+  SwitchTo SkinType
+
+update : Msg -> Model -> Model
+update msg model =
+  case msg of
+    SwitchTo newSkinType ->
+      log "hi"
+      { model | skinType = newSkinType }
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][
-    div [ class "row" ][
-      -- div [ class "col-xs-12" ] [ text <| "Today's date is " ++ dateString model ],
-      div [ class "col-xs-12" ] [ text <| "I'm in New York City" ]
+  div []
+    [ fieldset []
+        [ radio "PaleCaucasian" (SwitchTo PaleCaucasian)
+        , radio "BlondCaucasian" (SwitchTo BlondCaucasian)
+        , radio "DarkerCaucasian" (SwitchTo DarkerCaucasian)
+        , radio "Mediterranean" (SwitchTo Mediterranean)
+        , radio "MiddleEastern" (SwitchTo MiddleEastern)
+        , radio "Black" (SwitchTo Black)
+        ]
+    -- , [ text toString model.skinType ]
     ]
-  ]
+
+radio : String -> msg -> Html msg
+radio value msg =
+  label
+    [ style [("padding", "20px")]
+    ]
+    [ input [ type_ "radio", name "font-size", onClick msg ] []
+    , text value
+    ]
 
 -- CSS STYLES
 styles : { img : List ( String, String ) }
