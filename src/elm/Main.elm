@@ -1,25 +1,43 @@
 import Html exposing (Html, Attribute, div, span, fieldset, input, label, text)
 import Html.Attributes exposing (name, style, type_, class)
 import Html.Events exposing (onClick)
+import Task
+import Date exposing (Date)
 
 -- APP
 main : Program Never Model Msg
 main =
-  Html.beginnerProgram {
-    model = emptyModel,
+  Html.program {
+    init = init,
     view = view,
-    update = update
+    update = update,
+    subscriptions = (\_ -> Sub.none)
   }
 
 -- MODEL
 type alias Model =
   {
-    skinType : SkinType
+    updateDate : Result String Date
+  , skinType : SkinType
   , sunIndex : Float
   , userInputLocation : String
   , lat : Float
   , long : Float
   }
+
+init : (Model , Cmd Msg)
+init =
+  ( {
+     updateDate = Err "No date yet"
+     ,  skinType = Nothing
+     ,  sunIndex = 0
+     ,  userInputLocation = "\\"
+     ,  lat = 0
+     ,  long = 0
+   }
+  , Task.perform (GetDateSuccess NoOp) Date.now
+  )
+
 
 type SkinType
   = PaleCaucasian
@@ -30,36 +48,36 @@ type SkinType
   | Black
   | Nothing
 
-emptyModel : Model
-emptyModel =
-    {
-    -- ,  todaysDate = Date.now
-       skinType = Nothing
-    -- ,  currentTime = Time.now
-    ,  sunIndex = 0.1
-    ,  userInputLocation = "\\"
-    ,  lat = 0.1
-    ,  long = 0.1
-    }
-
 -- UPDATE
 type Msg
-  =
-  SwitchTo SkinType
+  = NoOp
+  | SwitchTo SkinType
+  | GetDateSuccess Msg Date
+  | GetDateFailure String
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
+    NoOp -> (model, Cmd.none)
     SwitchTo newSkinType ->
-      { model | skinType = newSkinType }
-
+      ( { model | skinType = newSkinType }
+      , Cmd.none
+      )
+    GetDateSuccess _ date ->
+      ( { model | updateDate = Ok date }
+      , Cmd.none
+      )
+    GetDateFailure msg ->
+      ( { model | updateDate = Err msg }
+      , Cmd.none
+      )
 -- VIEW
 
 view : Model -> Html Msg
 view model =
   div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][
     div [ class "row" ][
-      -- div [ class "col-xs-12" ] [ text <| "Today's date is " ++ dateString model ],
+      div [ class "col-xs-12" ] [ text <| "Today's date is " ++ toString model.updateDate ],
       div [ class "col-xs-12" ] [
         div []
         [ fieldset []
