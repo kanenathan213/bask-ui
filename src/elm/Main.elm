@@ -18,6 +18,7 @@ main =
 type alias Model =
   {
     updateDate : Result String Date
+  , currentDate : Maybe Date
   , skinType : SkinType
   , sunIndex : Float
   , userInputLocation : String
@@ -29,11 +30,12 @@ init : (Model , Cmd Msg)
 init =
   ( {
      updateDate = Err "No date yet"
-     ,  skinType = Nothing
-     ,  sunIndex = 0
-     ,  userInputLocation = "\\"
-     ,  lat = 0
-     ,  long = 0
+  ,  currentDate = Nothing
+  ,  skinType = PaleCaucasian
+  ,  sunIndex = 0
+  ,  userInputLocation = "\\"
+  ,  lat = 0
+  ,  long = 0
    }
   , Task.perform (GetDateSuccess NoOp) Date.now
   )
@@ -46,7 +48,6 @@ type SkinType
   | Mediterranean
   | MiddleEastern
   | Black
-  | Nothing
 
 -- UPDATE
 type Msg
@@ -64,20 +65,28 @@ update msg model =
       , Cmd.none
       )
     GetDateSuccess _ date ->
-      ( { model | updateDate = Ok date }
+      ( { model | currentDate = Just date }
       , Cmd.none
       )
     GetDateFailure msg ->
       ( { model | updateDate = Err msg }
       , Cmd.none
       )
--- VIEW
 
+currentDateString : Maybe Date -> String
+currentDateString date =
+    case date of
+      Just blarg ->
+        toString blarg
+      Nothing ->
+        ""
+
+-- VIEW
 view : Model -> Html Msg
 view model =
   div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][
     div [ class "row" ][
-      div [ class "col-xs-12" ] [ text <| "Today's date is " ++ toString model.updateDate ],
+      div [ class "col-xs-12" ] [ text <| "Today's date is " ++ currentDateString model.currentDate ],
       div [ class "col-xs-12" ] [
         div []
         [ fieldset []
